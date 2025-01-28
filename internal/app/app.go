@@ -2,6 +2,7 @@ package app
 
 import (
 	"authentication-service/internal/config"
+	"authentication-service/pkg/access_v1"
 	"authentication-service/pkg/auth_v1"
 	"context"
 	"log"
@@ -35,6 +36,7 @@ func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initConfig,
 		a.initServiceProvider,
+		a.initGRPCServer,
 	}
 
 	for _, f := range inits {
@@ -66,8 +68,9 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 
 	reflection.Register(a.grpcServer)
 	auth_v1.RegisterAuthV1Server(a.grpcServer, a.serviceProvider.AuthImpl(ctx))
-
+	access_v1.RegisterAccessV1Server(a.grpcServer, a.serviceProvider.AccessImpl(ctx))
 	return nil
+
 }
 
 func (a *App) Run() error {

@@ -17,7 +17,7 @@ type repo struct {
 	db db.Client
 }
 
-func NewRepository(db db.Client) repository.AuthRepository {
+func NewAuthRepository(db db.Client) repository.AuthRepository {
 	return &repo{
 		db: db,
 	}

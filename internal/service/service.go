@@ -2,6 +2,7 @@ package service
 
 import (
 	"authentication-service/internal/model"
+
 	"context"
 )
 
@@ -12,5 +13,5 @@ type AuthService interface {
 }
 
 type AccessService interface {
-	
+	Check(ctx context.Context, endpointAdress string) error
 }
