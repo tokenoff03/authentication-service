@@ -20,9 +20,10 @@ import (
 )
 
 type serviceProvider struct {
-	pgConfig   config.PgConfig
-	grpcConfig config.GRPCConfig
-	dbClient   db.Client
+	pgConfig    config.PgConfig
+	grpcConfig  config.GRPCConfig
+	tokenConfig config.TokenConfig
+	dbClient    db.Client
 
 	authRepository   repository.AuthRepository
 	accessRepository repository.AccessRepository
@@ -57,6 +58,18 @@ func (s *serviceProvider) GRCPConfig() config.GRPCConfig {
 	}
 
 	return s.grpcConfig
+}
+
+func (s *serviceProvider) TokenConfig() config.TokenConfig {
+	if s.tokenConfig == nil {
+		cfg, err := env.NewTokenConfig()
+		if err != nil {
+			log.Fatalf("failed to get token config: %v", err)
+		}
+		s.tokenConfig = cfg
+	}
+
+	return s.tokenConfig
 }
 
 func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
@@ -112,7 +125,7 @@ func (s *serviceProvider) AccessService(ctx context.Context) service.AccessServi
 
 func (s *serviceProvider) AuthImpl(ctx context.Context) *auth.AuthImplementation {
 	if s.authImpl == nil {
-		s.authImpl = auth.NewAuthImplementation(s.AuthService(ctx))
+		s.authImpl = auth.NewAuthImplementation(s.AuthService(ctx), s.TokenConfig())
 	}
 
 	return s.authImpl
@@ -120,7 +133,7 @@ func (s *serviceProvider) AuthImpl(ctx context.Context) *auth.AuthImplementation
 
 func (s *serviceProvider) AccessImpl(ctx context.Context) *accessImpl.AccessImplementation {
 	if s.accessImpl == nil {
-		s.accessImpl = accessImpl.NewAccessImplementation(s.AccessService(ctx))
+		s.accessImpl = accessImpl.NewAccessImplementation(s.AccessService(ctx), s.TokenConfig())
 	}
 
 	return s.accessImpl

@@ -1,6 +1,10 @@
 package config
 
-import "github.com/joho/godotenv"
+import (
+	"time"
+
+	"github.com/joho/godotenv"
+)
 
 type GRPCConfig interface {
 	Address() string
@@ -8,6 +12,13 @@ type GRPCConfig interface {
 
 type PgConfig interface {
 	DSN() string
+}
+
+type TokenConfig interface {
+	AccessSecretKey() string
+	RefreshSecretKey() string
+	AccessTTL() time.Duration
+	RefreshTTL() time.Duration
 }
 
 func Load(path string) error {
