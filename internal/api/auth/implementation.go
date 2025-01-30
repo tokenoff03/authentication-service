@@ -8,10 +8,11 @@ import (
 
 type AuthImplementation struct {
 	auth_v1.UnimplementedAuthV1Server
-	authService service.AuthService
-	tokenConfig config.TokenConfig
+	authService      service.AuthService
+	userCacheService service.UserCacheService
+	tokenConfig      config.TokenConfig
 }
 
-func NewAuthImplementation(authService service.AuthService, tokenConfig config.TokenConfig) *AuthImplementation {
-	return &AuthImplementation{authService: authService, tokenConfig: tokenConfig}
+func NewAuthImplementation(authService service.AuthService, tokenConfig config.TokenConfig, userCacheService service.UserCacheService) *AuthImplementation {
+	return &AuthImplementation{authService: authService, tokenConfig: tokenConfig, userCacheService: userCacheService}
 }

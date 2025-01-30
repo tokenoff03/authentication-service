@@ -6,14 +6,18 @@ import (
 	"authentication-service/internal/config"
 	"authentication-service/internal/config/env"
 	"authentication-service/internal/repository"
-	"authentication-service/internal/repository/access"
-	authRepo "authentication-service/internal/repository/auth"
+	"authentication-service/internal/repository/pg/access"
+	authRepo "authentication-service/internal/repository/pg/auth"
+	redis_repository "authentication-service/internal/repository/redis"
 	"authentication-service/internal/service"
 	accessService "authentication-service/internal/service/access"
 	authService "authentication-service/internal/service/auth"
+	redis_service "authentication-service/internal/service/redis"
 	"context"
 	"log"
 
+	"github.com/tokenoff03/lib_ad1lek/pkg/cache"
+	"github.com/tokenoff03/lib_ad1lek/pkg/cache/redis"
 	"github.com/tokenoff03/lib_ad1lek/pkg/closer"
 	"github.com/tokenoff03/lib_ad1lek/pkg/db"
 	"github.com/tokenoff03/lib_ad1lek/pkg/db/pg"
@@ -23,14 +27,19 @@ type serviceProvider struct {
 	pgConfig    config.PgConfig
 	grpcConfig  config.GRPCConfig
 	tokenConfig config.TokenConfig
-	dbClient    db.Client
+	redisConfig config.RedisConfig
 
-	authRepository   repository.AuthRepository
-	accessRepository repository.AccessRepository
-	authService      service.AuthService
-	accessService    service.AccessService
-	authImpl         *auth.AuthImplementation
-	accessImpl       *accessImpl.AccessImplementation
+	dbClient    db.Client
+	redisClient cache.RedisClient
+
+	authRepository      repository.AuthRepository
+	accessRepository    repository.AccessRepository
+	authService         service.AuthService
+	accessService       service.AccessService
+	userCacheService    service.UserCacheService
+	userCacheRepository repository.UserCacheRepository
+	authImpl            *auth.AuthImplementation
+	accessImpl          *accessImpl.AccessImplementation
 }
 
 func newServiceProvider() *serviceProvider {
@@ -72,6 +81,18 @@ func (s *serviceProvider) TokenConfig() config.TokenConfig {
 	return s.tokenConfig
 }
 
+func (s *serviceProvider) RedisConfig() config.RedisConfig {
+	if s.redisConfig == nil {
+		cfg, err := env.NewRedisConfig()
+		if err != nil {
+			log.Fatalf("failed to get token config: %v", err)
+		}
+		s.redisConfig = cfg
+	}
+
+	return s.redisConfig
+}
+
 func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
 	if s.dbClient == nil {
 		cl, err := pg.New(ctx, s.PGConfig().DSN())
@@ -88,6 +109,22 @@ func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
 	}
 
 	return s.dbClient
+}
+
+func (s *serviceProvider) RedisClient(ctx context.Context) cache.RedisClient {
+	if s.redisClient == nil {
+		cl := redis.NewClient(s.RedisConfig().DSN())
+
+		err := cl.Ping(ctx)
+		if err != nil {
+			log.Fatalf("ping error: %v", err)
+		}
+
+		closer.Add(cl.Close)
+		s.redisClient = cl
+	}
+
+	return s.redisClient
 }
 
 func (s *serviceProvider) AuthRepository(ctx context.Context) repository.AuthRepository {
@@ -107,6 +144,15 @@ func (s *serviceProvider) AccessRepository(ctx context.Context) repository.Acces
 	return s.accessRepository
 }
 
+func (s *serviceProvider) UserCacheRepository(ctx context.Context) repository.UserCacheRepository {
+	if s.userCacheRepository == nil {
+		s.userCacheRepository = redis_repository.NewUserRepository(s.RedisClient(ctx))
+
+	}
+
+	return s.userCacheRepository
+}
+
 func (s *serviceProvider) AuthService(ctx context.Context) service.AuthService {
 	if s.authService == nil {
 		s.authService = authService.NewAuthService(s.AuthRepository(ctx))
@@ -123,9 +169,17 @@ func (s *serviceProvider) AccessService(ctx context.Context) service.AccessServi
 	return s.accessService
 }
 
+func (s *serviceProvider) UserCacheService(ctx context.Context) service.UserCacheService {
+	if s.userCacheService == nil {
+		s.userCacheService = redis_service.NewUserCacheService(s.UserCacheRepository(ctx))
+	}
+
+	return s.userCacheService
+}
+
 func (s *serviceProvider) AuthImpl(ctx context.Context) *auth.AuthImplementation {
 	if s.authImpl == nil {
-		s.authImpl = auth.NewAuthImplementation(s.AuthService(ctx), s.TokenConfig())
+		s.authImpl = auth.NewAuthImplementation(s.AuthService(ctx), s.TokenConfig(), s.UserCacheService(ctx))
 	}
 
 	return s.authImpl

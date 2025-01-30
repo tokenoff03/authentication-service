@@ -17,14 +17,6 @@ func NewAuthService(authRepository repository.AuthRepository) service.AuthServic
 	}
 }
 
-func (s *authService) Login(ctx context.Context, login *model.Login) (string, error) {
-	return "", nil
-}
-
-func (s *authService) GetRefreshToken(ctx context.Context, refreshToken string) (string, error) {
-	return "", nil
-}
-
-func (s *authService) GetAccessToken(ctx context.Context, accessToken string) (string, error) {
-	return "", nil
+func (s *authService) Login(ctx context.Context, login *model.Login) (*model.UserInfo, error) {
+	return s.authRepository.Login(ctx, login)
 }

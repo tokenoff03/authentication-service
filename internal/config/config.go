@@ -14,6 +14,10 @@ type PgConfig interface {
 	DSN() string
 }
 
+type RedisConfig interface {
+	DSN() string
+}
+
 type TokenConfig interface {
 	AccessSecretKey() string
 	RefreshSecretKey() string

@@ -1,6 +1,7 @@
 package model
 
 type UserInfo struct {
-	Email string
-	Role string
+	Password    string `db:"password"`
+	Email       string `db:"email"`
+	Role        string `db:"role"`
 }
