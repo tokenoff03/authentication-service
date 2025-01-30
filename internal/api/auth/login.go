@@ -22,7 +22,7 @@ func (i *AuthImplementation) Login(ctx context.Context, req *auth_v1.LoginReques
 	}
 
 	if !utils.VerifyPassword(req.Password, user.Password) {
-		return nil, status.Errorf(codes.Canceled, "password is incorrect")
+		return nil, status.Errorf(codes.Aborted, "password is incorrect")
 	}
 
 	refreshToken, err := utils.GenerateToken(model.UserInfo{

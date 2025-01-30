@@ -10,7 +10,7 @@ import (
 var configPath string
 
 func init() {
-	flag.StringVar(&configPath, "config-path", "../.env", "path to config file")
+	flag.StringVar(&configPath, "config-path", "../../.env", "path to config file")
 }
 
 func main() {

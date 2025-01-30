@@ -48,7 +48,7 @@ func (r *repo) Login(ctx context.Context, login *model.Login) (*model.UserInfo, 
 	var user model.UserInfo
 	err = r.db.DB().ScanOneContext(ctx, &user, q, args...)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	return &user, nil
