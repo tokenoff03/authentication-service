@@ -16,8 +16,6 @@ func (i *AuthImplementation) GetRefreshToken(ctx context.Context, req *auth_v1.G
 		return nil, status.Errorf(codes.Aborted, "invalid refresh token")
 	}
 
-	//Пойди в базу или в кеш за доп данными пользователя
-
 	refreshToken, err := utils.GenerateToken(model.UserInfo{
 		Email: claims.Email,
 		Role:  claims.Role,

@@ -179,7 +179,7 @@ func (s *serviceProvider) UserCacheService(ctx context.Context) service.UserCach
 
 func (s *serviceProvider) AuthImpl(ctx context.Context) *auth.AuthImplementation {
 	if s.authImpl == nil {
-		s.authImpl = auth.NewAuthImplementation(s.AuthService(ctx), s.TokenConfig(), s.UserCacheService(ctx))
+		s.authImpl = auth.NewAuthImplementation(s.AuthService(ctx), s.TokenConfig())
 	}
 
 	return s.authImpl

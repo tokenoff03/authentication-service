@@ -13,7 +13,7 @@ type AccessRepository interface {
 	Check(ctx context.Context, endpointAdress string) error
 }
 
-type UserCacheRepository interface {
+type UserCacheRepository interface { //не используется, для примера оставил
 	GetUser(ctx context.Context, email string) (*model.UserInfo, error)
 	SetUser(ctx context.Context, user *model.UserInfo) error
 }
