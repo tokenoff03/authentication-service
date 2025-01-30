@@ -21,7 +21,7 @@ func (i *AuthImplementation) Login(ctx context.Context, req *auth_v1.LoginReques
 		return nil, status.Errorf(codes.Internal, "failed to get user (%v) from db: %v", req.Email, err)
 	}
 
-	if !utils.VerifyPassword(req.Password, user.Password) {
+	if !utils.VerifyPassword(user.Password, req.Password) {
 		return nil, status.Errorf(codes.Aborted, "password is incorrect")
 	}
 
