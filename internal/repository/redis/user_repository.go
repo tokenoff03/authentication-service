@@ -1,8 +1,8 @@
 package redis_repository
 
 import (
-	"authentication-service/internal/model"
-	"authentication-service/internal/repository"
+	"github.com/tokenoff03/authentication-service/internal/model"
+	"github.com/tokenoff03/authentication-service/internal/repository"
 	"context"
 	"encoding/json"
 

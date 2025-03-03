@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"authentication-service/internal/model"
+	"github.com/tokenoff03/authentication-service/internal/model"
 	"context"
 )
 

@@ -1,20 +1,21 @@
 package app
 
 import (
-	accessImpl "authentication-service/internal/api/access"
-	"authentication-service/internal/api/auth"
-	"authentication-service/internal/config"
-	"authentication-service/internal/config/env"
-	"authentication-service/internal/repository"
-	"authentication-service/internal/repository/pg/access"
-	authRepo "authentication-service/internal/repository/pg/auth"
-	redis_repository "authentication-service/internal/repository/redis"
-	"authentication-service/internal/service"
-	accessService "authentication-service/internal/service/access"
-	authService "authentication-service/internal/service/auth"
-	redis_service "authentication-service/internal/service/redis"
 	"context"
 	"log"
+
+	accessImpl "github.com/tokenoff03/authentication-service/internal/api/access"
+	"github.com/tokenoff03/authentication-service/internal/api/auth"
+	"github.com/tokenoff03/authentication-service/internal/config"
+	"github.com/tokenoff03/authentication-service/internal/config/env"
+	"github.com/tokenoff03/authentication-service/internal/repository"
+	"github.com/tokenoff03/authentication-service/internal/repository/pg/access"
+	authRepo "github.com/tokenoff03/authentication-service/internal/repository/pg/auth"
+	redis_repository "github.com/tokenoff03/authentication-service/internal/repository/redis"
+	"github.com/tokenoff03/authentication-service/internal/service"
+	accessService "github.com/tokenoff03/authentication-service/internal/service/access"
+	authService "github.com/tokenoff03/authentication-service/internal/service/auth"
+	redis_service "github.com/tokenoff03/authentication-service/internal/service/redis"
 
 	"github.com/tokenoff03/lib_ad1lek/pkg/cache"
 	"github.com/tokenoff03/lib_ad1lek/pkg/cache/redis"

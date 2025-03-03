@@ -1,9 +1,9 @@
 package auth
 
 import (
-	"authentication-service/internal/config"
-	"authentication-service/internal/service"
-	"authentication-service/pkg/auth_v1"
+	"github.com/tokenoff03/authentication-service/internal/config"
+	"github.com/tokenoff03/authentication-service/internal/service"
+	"github.com/tokenoff03/authentication-service/pkg/auth_v1"
 )
 
 type AuthImplementation struct {

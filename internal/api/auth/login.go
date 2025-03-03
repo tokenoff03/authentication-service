@@ -1,10 +1,11 @@
 package auth
 
 import (
-	"authentication-service/internal/model"
-	"authentication-service/internal/utils"
-	"authentication-service/pkg/auth_v1"
 	"context"
+
+	"github.com/tokenoff03/authentication-service/internal/model"
+	"github.com/tokenoff03/authentication-service/internal/utils"
+	"github.com/tokenoff03/authentication-service/pkg/auth_v1"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

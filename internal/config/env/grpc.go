@@ -1,7 +1,7 @@
 package env
 
 import (
-	"authentication-service/internal/config"
+	"github.com/tokenoff03/authentication-service/internal/config"
 	"errors"
 	"net"
 	"os"

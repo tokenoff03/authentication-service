@@ -1,9 +1,10 @@
 package env
 
 import (
-	"authentication-service/internal/config"
 	"errors"
 	"os"
+
+	"github.com/tokenoff03/authentication-service/internal/config"
 )
 
 const dsnEnvName = "PG_DSN"

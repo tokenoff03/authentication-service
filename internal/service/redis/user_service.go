@@ -1,10 +1,11 @@
 package redis_service
 
 import (
-	"authentication-service/internal/model"
-	"authentication-service/internal/repository"
-	"authentication-service/internal/service"
 	"context"
+
+	"github.com/tokenoff03/authentication-service/internal/model"
+	"github.com/tokenoff03/authentication-service/internal/repository"
+	"github.com/tokenoff03/authentication-service/internal/service"
 )
 
 type userService struct {

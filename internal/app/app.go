@@ -1,13 +1,14 @@
 package app
 
 import (
-	"authentication-service/internal/config"
-	"authentication-service/pkg/access_v1"
-	"authentication-service/pkg/auth_v1"
 	"context"
 	"log"
 	"net"
 	"sync"
+
+	"github.com/tokenoff03/authentication-service/internal/config"
+	"github.com/tokenoff03/authentication-service/pkg/access_v1"
+	"github.com/tokenoff03/authentication-service/pkg/auth_v1"
 
 	"github.com/tokenoff03/lib_ad1lek/pkg/closer"
 	"google.golang.org/grpc"

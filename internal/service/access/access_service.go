@@ -1,8 +1,8 @@
 package access
 
 import (
-	"authentication-service/internal/repository"
-	"authentication-service/internal/service"
+	"github.com/tokenoff03/authentication-service/internal/repository"
+	"github.com/tokenoff03/authentication-service/internal/service"
 	"context"
 )
 

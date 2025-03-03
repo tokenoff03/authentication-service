@@ -1,9 +1,10 @@
 package access
 
 import (
-	"authentication-service/internal/config"
-	"authentication-service/internal/service"
-	"authentication-service/pkg/access_v1"
+	"github.com/tokenoff03/authentication-service/pkg/access_v1"
+
+	"github.com/tokenoff03/authentication-service/internal/config"
+	"github.com/tokenoff03/authentication-service/internal/service"
 )
 
 type AccessImplementation struct {

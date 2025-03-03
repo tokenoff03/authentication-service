@@ -1,10 +1,11 @@
 package main
 
 import (
-	"authentication-service/internal/app"
 	"context"
 	"flag"
 	"log"
+
+	"github.com/tokenoff03/authentication-service/internal/app"
 )
 
 var configPath string

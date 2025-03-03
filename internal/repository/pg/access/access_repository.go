@@ -1,7 +1,7 @@
 package access
 
 import (
-	"authentication-service/internal/repository"
+	"github.com/tokenoff03/authentication-service/internal/repository"
 	"context"
 
 	sq "github.com/Masterminds/squirrel"

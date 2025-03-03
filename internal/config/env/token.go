@@ -1,10 +1,11 @@
 package env
 
 import (
-	"authentication-service/internal/config"
 	"errors"
 	"os"
 	"time"
+
+	"github.com/tokenoff03/authentication-service/internal/config"
 )
 
 const accessSecretKeyEnvName = "ACCESS_TOKEN_SECRET_KEY"

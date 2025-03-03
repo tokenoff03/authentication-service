@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"authentication-service/internal/model"
+	"github.com/tokenoff03/authentication-service/internal/model"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"

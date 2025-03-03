@@ -1,11 +1,12 @@
 package main
 
 import (
-	"authentication-service/pkg/access_v1"
 	"context"
 	"flag"
 	"fmt"
 	"log"
+
+	"github.com/tokenoff03/authentication-service/pkg/access_v1"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

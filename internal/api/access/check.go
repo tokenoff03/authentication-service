@@ -1,11 +1,12 @@
 package access
 
 import (
-	"authentication-service/internal/utils"
-	"authentication-service/pkg/access_v1"
 	"context"
 	"errors"
 	"strings"
+
+	"github.com/tokenoff03/authentication-service/internal/utils"
+	"github.com/tokenoff03/authentication-service/pkg/access_v1"
 
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/emptypb"
