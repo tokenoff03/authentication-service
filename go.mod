@@ -1,4 +1,4 @@
-module authentication-service
+module github.com/tokenoff03/authentication-service
 
 go 1.22.2
 
