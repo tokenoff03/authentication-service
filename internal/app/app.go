@@ -4,11 +4,19 @@ import (
 	"context"
 	"log"
 	"net"
+	"os"
 	"sync"
 
+	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+	"github.com/natefinch/lumberjack"
+	"github.com/opentracing/opentracing-go"
 	"github.com/tokenoff03/authentication-service/internal/config"
+	"github.com/tokenoff03/authentication-service/internal/logger"
+	"github.com/tokenoff03/authentication-service/internal/tracing"
 	"github.com/tokenoff03/authentication-service/pkg/access_v1"
 	"github.com/tokenoff03/authentication-service/pkg/auth_v1"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 
 	"github.com/tokenoff03/lib_ad1lek/pkg/closer"
 	"google.golang.org/grpc"
@@ -16,15 +24,19 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
+var (
+	serviceName = "auth_service"
+)
+
 type App struct {
 	serviceProvider *serviceProvider
 	grpcServer      *grpc.Server
-
-	path string
+	logLevel        string
+	path            string
 }
 
-func NewApp(ctx context.Context, path string) (*App, error) {
-	a := &App{path: path}
+func NewApp(ctx context.Context, path string, logLevel string) (*App, error) {
+	a := &App{path: path, logLevel: logLevel}
 	err := a.initDeps(ctx)
 	if err != nil {
 		return nil, err
@@ -36,6 +48,8 @@ func NewApp(ctx context.Context, path string) (*App, error) {
 func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initConfig,
+		a.initLogger,
+		a.initTracing,
 		a.initServiceProvider,
 		a.initGRPCServer,
 	}
@@ -49,6 +63,52 @@ func (a *App) initDeps(ctx context.Context) error {
 	return nil
 }
 
+func (a *App) initLogger(_ context.Context) error {
+	logger.Init(a.getCore(a.getAtomicLevel()))
+
+	return nil
+}
+
+func (a *App) initTracing(_ context.Context) error {
+	tracing.Init(logger.Logger(), serviceName)
+
+	return nil
+}
+
+func (a *App) getCore(level zap.AtomicLevel) zapcore.Core {
+	stdout := zapcore.AddSync(os.Stdout)
+
+	file := zapcore.AddSync(&lumberjack.Logger{
+		Filename:   "logs/app.log",
+		MaxSize:    10, // megabytes
+		MaxBackups: 3,
+		MaxAge:     7, // days
+	})
+
+	productionCfg := zap.NewProductionEncoderConfig()
+	productionCfg.TimeKey = "timestamp"
+	productionCfg.EncodeTime = zapcore.ISO8601TimeEncoder
+
+	developmentCfg := zap.NewDevelopmentEncoderConfig()
+	developmentCfg.EncodeLevel = zapcore.CapitalColorLevelEncoder
+
+	consoleEncoder := zapcore.NewConsoleEncoder(developmentCfg)
+	fileEncoder := zapcore.NewJSONEncoder(productionCfg)
+
+	return zapcore.NewTee(
+		zapcore.NewCore(consoleEncoder, stdout, level),
+		zapcore.NewCore(fileEncoder, file, level),
+	)
+}
+
+func (a *App) getAtomicLevel() zap.AtomicLevel {
+	var level zapcore.Level
+	if err := level.Set(a.logLevel); err != nil {
+		log.Fatalf("failed to set log level: %v", err)
+	}
+
+	return zap.NewAtomicLevelAt(level)
+}
 func (a *App) initConfig(_ context.Context) error {
 	err := config.Load(a.path)
 	if err != nil {
@@ -65,13 +125,15 @@ func (a *App) initServiceProvider(_ context.Context) error {
 }
 
 func (a *App) initGRPCServer(ctx context.Context) error {
-	a.grpcServer = grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
+	a.grpcServer = grpc.NewServer(
+		grpc.Creds(insecure.NewCredentials()),
+		grpc.UnaryInterceptor(otgrpc.OpenTracingServerInterceptor(opentracing.GlobalTracer())),
+	)
 
 	reflection.Register(a.grpcServer)
 	auth_v1.RegisterAuthV1Server(a.grpcServer, a.serviceProvider.AuthImpl(ctx))
 	access_v1.RegisterAccessV1Server(a.grpcServer, a.serviceProvider.AccessImpl(ctx))
 	return nil
-
 }
 
 func (a *App) Run() error {

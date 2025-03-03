@@ -11,6 +11,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const traceIDKey = "x-trace-id"
+
 func (i *AuthImplementation) Login(ctx context.Context, req *auth_v1.LoginRequest) (*auth_v1.LoginResponse, error) {
 
 	user, err := i.authService.Login(ctx, &model.Login{
